@@ -8,17 +8,18 @@ const main = async () => {
 	console.log("Creating Second Task.....");
 	const item2 = await todoItems.createTask("Play Pokemon with Twitch TV", "Should we revive Helix?");
 	const allItems = await todoItems.getAllTasks();
+	console.log("Showing all tasks......");
 	console.log(allItems);
 	console.log("Removing first task.......");
 	await todoItems.removeTask(item._id);
-
 	const getItems = await todoItems.getAllTasks();
-	console.log("These are the remaining task......");
+	console.log("These are the remaining tasks......");
 	console.log(getItems);
 	
-	console.log("Completing remaining task");
+	console.log("Completing remaining tasks");
 	await todoItems.completeTask(item2._id);
 	const updatedItem2 = await todoItems.getTask(item2._id);
+	console.log("Task completed");
 	console.log(updatedItem2);
 
 	const db = await connection();

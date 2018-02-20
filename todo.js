@@ -1,4 +1,4 @@
-const mongoCollection = require("./mongoCollection");
+const mongoCollection = require("./mongoCollections");
 const todoItems = mongoCollection.todoItems;
 const uuidv1 = require("uuid/v1");
 
@@ -23,7 +23,6 @@ let exportedMethods = {
 	async createTask(title, description) {
 		if (!title) throw "You must provide a title for the item";
 		if (!description) throw "You must provide a description for the item";
-
 		const uuid = uuidv1();
 		const todoItemsCollection = await todoItems();
 		let newItem = {
@@ -33,10 +32,8 @@ let exportedMethods = {
 			completed: false,
 			completedAt: null
 		}
-
 		const insertInfo = await todoItemsCollection.insertOne(newItem);
 		if (insertInfo.insertedCount === 0) throw "Could not add item";
-		
 		const item = await this.getTask(uuid);
 		return item;
 	},
@@ -45,16 +42,9 @@ let exportedMethods = {
 	
 		const todoItemsCollection = await todoItems();
 		const itemToUpdate = await this.getTask(taskId);
-		const updatedItem = {
-			_id: itemToUpdate._id,
-			title: itemToUpdate.title,
-			description: itemToUpdate.description,
-			completed: true,
-			completedAt: new Date()
-		}
-
-		const updateInfo = await todoItemsCollection.updateOne({ _id: taskId }, updatedItem);
-		if (updatedInfo.modifiedCount === 0) {
+		const date = new Date();
+		const updateInfo = await todoItemsCollection.updateOne({ _id: taskId }, {$set: {"completed": true, "completedAt": date}});
+		if (updateInfo.modifiedCount === 0) {
 			throw "Could not complete task successfully";
 		}
 		return await this.getTask(taskId);
@@ -64,7 +54,7 @@ let exportedMethods = {
 		if (!id) throw "You must provide an id for a task to remove";
 	
 		const todoItemsCollection = await todoItems();
-		const deletionInfo = await todoItemsCollection.removeOve({ _id: id });
+		const deletionInfo = await todoItemsCollection.removeOne({ _id: id });
 	
 		if (deletionInfo.deletedCount === 0) {
 			throw "Could not delete task with id $(id)";
